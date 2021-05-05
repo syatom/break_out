@@ -7,12 +7,18 @@ let x = canvas.width / 2;
 let y = canvas.height - 30;
 let dx = 2;
 let dy = -2;
-const ballRadius = 5
+//let ballRadius = 5
 let paddleHeight = 10
-let paddleWidth = 75
+let paddleWidth = 100
 let paddleX = (canvas.width - paddleWidth) / 2
 let rightPressed = false
 let leftPressed = false
+let maxScore = 0
+levels.forEach((level) => {
+    maxScore = maxScore + level.levelScore
+})
+
+console.log(maxScore)
 
 // keeping track of the score
 let score = 0
@@ -39,11 +45,15 @@ let level = 0
 //     }
 // }
 
-let bricks = levels[level].createBricks()
+let bricks = []
+const generateBricks = () => {
+    bricks = levels[level].createBricks()
+}
+generateBricks()
 
 const drawBall = () => {
     ctx.beginPath();
-    ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+    ctx.arc(x, y, levels[level].ballRadius, 0, Math.PI * 2);
     ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();
@@ -86,13 +96,13 @@ const draw = () => {
     drawLives()
     x += dx
     y += dy
-    if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+    if (x + dx > canvas.width - levels[level].ballRadius || x + dx < levels[level].ballRadius) {
         dx = -dx;
     }
 
-    if (y + dy < ballRadius) {
+    if (y + dy < levels[level].ballRadius) {
         dy = -dy;
-    } else if (y + dy > canvas.height - ballRadius) {
+    } else if (y + dy > canvas.height - levels[level].ballRadius) {
         if (x > paddleX && x < paddleX + paddleWidth) {
             dy = -dy
             // dx ++
@@ -100,14 +110,25 @@ const draw = () => {
         } else {
             lives--
             if (!lives) {
-                alert("GAME OVER!")
-                document.location.reload()
-                clearInterval(interval)
+                //alert("GAME OVER!")
+                //document.location.reload()
+                //clearInterval(interval)
+                clearInterval(interval); // Needed for Chrome to end game
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+                ctx.font = "bold 24px Arial"
+                //ctx.fontWeight = "700"
+                ctx.fillStyle = "#0095DD"
+                ctx.textAlign = "center"
+                ctx.fillText('GAME OVER!', (canvas.width / 2), canvas.height / 2)
+                drawScore()
+                drawLevel()
+                drawLives()
+
             } else {
                 x = canvas.width / 2;
                 y = canvas.height - 30;
-                dx = 2;
-                dy = -2;
+                dx = 2 + level;
+                dy = -2 - level;
                 paddleX = (canvas.width - paddleWidth) / 2;
             }
 
@@ -165,10 +186,28 @@ const collisionDetection = () => {
                     dy = -dy;
                     b.status = 0
                     score++
-                    if (score === levels[level].brickRowCount * levels[level].brickColumnCount) {
-                        alert(`YOU WIN, CONGRATULATIONS! score: ${score}`);
-                        document.location.reload();
+                    if (score === maxScore) {
+                        //alert(`YOU WIN, CONGRATULATIONS! score: ${score}`);
+                        //document.location.reload();
                         clearInterval(interval); // Needed for Chrome to end game
+                        ctx.clearRect(0, 0, canvas.width, canvas.height)
+                        ctx.font = "bold 24px Arial"
+                        //ctx.fontWeight = "700"
+                        ctx.fillStyle = "#0095DD"
+                        ctx.textAlign = "center"
+                        ctx.fillText('YOU WIN', (canvas.width / 2), (canvas.height / 2) - 24)
+                        ctx.fillText('CONGRATULATIONS!', (canvas.width / 2), (canvas.height / 2) + 24)
+                        
+
+
+                    } else if (score === levels[level].score) {
+                        level++
+                        x = canvas.width / 2;
+                        y = canvas.height - 30;
+                        dx = 2 + level;
+                        dy = -2 - level;
+                        paddleWidth = paddleWidth - 10
+                        generateBricks()
                     }
                 }
             }
@@ -179,19 +218,25 @@ const collisionDetection = () => {
 const drawScore = () => {
     ctx.font = "16px Arial"
     ctx.fillStyle = "#0095DD"
+    ctx.textAlign = "start"
     ctx.fillText(`Score: ${score}`, 8, 20)
+    
 }
 
 const drawLives = () => {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
+    ctx.textAlign = "start"
     ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+    
 }
 
 const drawLevel = () => {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#0095DD";
-    ctx.fillText(`Level: ${level+1}`, canvas.width/2, 20)
+    ctx.textAlign = "center"
+    ctx.fillText(`Level: ${level + 1}`, canvas.width / 2, 20)
+    
 }
 
 document.addEventListener('keydown', keyDownHandler, false)
