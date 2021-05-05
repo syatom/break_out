@@ -18,7 +18,7 @@ levels.forEach((level) => {
     maxScore = maxScore + level.levelScore
 })
 
-console.log(maxScore)
+console.log("Max game Score: ", maxScore)
 
 // keeping track of the score
 let score = 0
@@ -28,26 +28,10 @@ let lives = 3
 
 let level = 0
 
-// Setting up the brick variables
-// let brickRowCount = 5
-// let brickColumnCount = 10
-// let brickWidth = 40
-// let brickHeight = 15
-// let brickPadding = 5
-// let brickOffsetTop = 30
-// let brickOffsetLeft = 15
-
-// const bricks = [];
-// for (let c = 0; c < brickColumnCount; c++) {
-//     bricks[c] = [];
-//     for (let r = 0; r < brickRowCount; r++) {
-//         bricks[c][r] = { x: 0, y: 0, status: 1 };
-//     }
-// }
-
 let bricks = []
 const generateBricks = () => {
     bricks = levels[level].createBricks()
+    console.log(`Level score for level: ${level+1}, is: ${levels[level].score}`)
 }
 generateBricks()
 
@@ -110,13 +94,9 @@ const draw = () => {
         } else {
             lives--
             if (!lives) {
-                //alert("GAME OVER!")
-                //document.location.reload()
-                //clearInterval(interval)
                 clearInterval(interval); // Needed for Chrome to end game
                 ctx.clearRect(0, 0, canvas.width, canvas.height)
                 ctx.font = "bold 24px Arial"
-                //ctx.fontWeight = "700"
                 ctx.fillStyle = "#0095DD"
                 ctx.textAlign = "center"
                 ctx.fillText('GAME OVER!', (canvas.width / 2), canvas.height / 2)
@@ -127,8 +107,8 @@ const draw = () => {
             } else {
                 x = canvas.width / 2;
                 y = canvas.height - 30;
-                dx = 2 + level;
-                dy = -2 - level;
+                dx = 2;
+                dy = -2;
                 paddleX = (canvas.width - paddleWidth) / 2;
             }
 
@@ -187,12 +167,9 @@ const collisionDetection = () => {
                     b.status = 0
                     score++
                     if (score === maxScore) {
-                        //alert(`YOU WIN, CONGRATULATIONS! score: ${score}`);
-                        //document.location.reload();
                         clearInterval(interval); // Needed for Chrome to end game
                         ctx.clearRect(0, 0, canvas.width, canvas.height)
                         ctx.font = "bold 24px Arial"
-                        //ctx.fontWeight = "700"
                         ctx.fillStyle = "#0095DD"
                         ctx.textAlign = "center"
                         ctx.fillText('YOU WIN', (canvas.width / 2), (canvas.height / 2) - 24)
@@ -244,26 +221,3 @@ document.addEventListener('keyup', keyUpHandler, false)
 document.addEventListener("mousemove", mouseMoveHandler, false)
 
 let interval = setInterval(draw, 10)
-
-
-
-// // A rectangle
-// ctx.beginPath();
-// ctx.rect(20, 40, 50, 50);
-// ctx.fillStyle = "#FF0000";
-// ctx.fill();
-// ctx.closePath();
-
-// // A circule
-// ctx.beginPath();
-// ctx.arc(240, 160, 20, 0, Math.PI*2, false);
-// ctx.fillStyle = "green";
-// ctx.fill();
-// ctx.closePath();
-
-// // rectangle with outline only
-// ctx.beginPath();
-// ctx.rect(160, 10, 100, 40);
-// ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
-// ctx.stroke();
-// ctx.closePath();
